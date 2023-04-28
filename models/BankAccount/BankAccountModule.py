@@ -1,6 +1,6 @@
-from typing import Any, Sequence
+from __future__ import annotations
 
-from sqlalchemy import Integer, String, Row, RowMapping
+from sqlalchemy import Integer, String, Row, RowMapping, Any, Sequence
 from sqlalchemy import select
 from sqlalchemy.orm import mapped_column, Mapped, Session
 

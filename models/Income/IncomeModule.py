@@ -1,13 +1,14 @@
+from __future__ import annotations
+
 from sqlalchemy import Integer, String, ForeignKey, select, Sequence, Row, RowMapping
 from sqlalchemy.dialects.postgresql import Any
 from sqlalchemy.orm import mapped_column, Mapped, relationship, Session
 
 from models.Base import Base
-from models.Product.ProductModule import Product
+from models.IncomeProduct.IncomeProductModule import IncomeProduct
 
 import models.Income.data as data
 import models.BankAccount.data as bank_account_data
-import models.IncomeProduct.data as income_product_data
 
 
 class IncomeAPI:
@@ -17,7 +18,7 @@ class IncomeAPI:
             sum_: int,
             from_account: str,
             bank_account_id: int,
-            products: list["Product"]
+            products: list["IncomeProduct"]
     ):
         income = Income(
             sum=sum_,
@@ -40,7 +41,7 @@ class IncomeAPI:
             new_sum: int | None,
             new_from_account: str | None,
             new_bank_account_id: int | None,
-            new_products: list["Product"] | None
+            new_products: list["IncomeProduct"] | None
     ):
         income = session.get(Income, id_)
 
@@ -54,7 +55,7 @@ class IncomeAPI:
             income.bank_account_id = new_bank_account_id
 
         if new_products:
-            income.products = new_products
+            income.income_products = new_products
 
         session.commit()
 
@@ -75,6 +76,4 @@ class Income(Base):
         data.bank_account_id,
         ForeignKey(f'{bank_account_data.tablename}.{bank_account_data.id_}')
     )
-    products: Mapped[list["Product"]] = relationship(
-        secondary=income_product_data.tablename
-    )
+    income_products: Mapped[list["IncomeProduct"]] = relationship()

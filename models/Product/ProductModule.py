@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from sqlalchemy import Integer, String, Sequence, Row, RowMapping, select
 from sqlalchemy.dialects.postgresql import Any
 from sqlalchemy.orm import Mapped, mapped_column, Session

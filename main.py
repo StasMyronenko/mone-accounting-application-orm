@@ -1,3 +1,3 @@
-from run import simple_run
+from run import run_console_application
 
-simple_run()
+run_console_application()

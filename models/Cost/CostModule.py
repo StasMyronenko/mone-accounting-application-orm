@@ -13,7 +13,8 @@ import models.Personal.data as personal_data
 class CostAPI:
     @staticmethod
     def create(
-            session: Session, sum_: int,
+            session: Session,
+            sum_: int,
             bank_account_id: int,
             to_account: str,
             description: str,
@@ -27,7 +28,6 @@ class CostAPI:
             responsible_person_id=responsible_person_id
         )
         session.add(cost)
-        session.commit()
 
     @staticmethod
     def read_all(session: Session) -> Sequence[Row | RowMapping | Any | "Cost"]:
@@ -61,13 +61,10 @@ class CostAPI:
         if new_responsible_person_id:
             cost.responsible_person_id = new_responsible_person_id
 
-        session.commit()
-
     @staticmethod
     def delete_by_id(session: Session, id_: int):
         cost = session.get(Cost, id_)
         session.delete(cost)
-        session.commit()
 
 
 class Cost(Base):
@@ -75,11 +72,15 @@ class Cost(Base):
 
     id: Mapped[int] = mapped_column(data.id_, Integer, primary_key=True)
     sum: Mapped[int] = mapped_column(data.sum_, Integer, default=0, nullable=False)
-    bank_account_id: Mapped[int] = mapped_column(data.bank_account_id, ForeignKey(
-        f'{bank_account_data.tablename}.{bank_account_data.id_}'
-    ))
+    bank_account_id: Mapped[int] = mapped_column(
+        data.bank_account_id,
+        ForeignKey(f'{bank_account_data.tablename}.{bank_account_data.id_}', ondelete="SET NULL"),
+        nullable=True
+    )
     to_account: Mapped[str] = mapped_column(data.to_account, String, nullable=False)
     pay_item_description: Mapped[str] = mapped_column(data.pay_item_description, String)
-    responsible_person_id: Mapped[int] = mapped_column(data.responsible_person_id, ForeignKey(
-        f'{personal_data.tablename}.{personal_data.id_}'
-    ))
+    responsible_person_id: Mapped[int] = mapped_column(
+        data.responsible_person_id,
+        ForeignKey(f'{personal_data.tablename}.{personal_data.id_}', ondelete="SET NULL"),
+        nullable=True
+    )

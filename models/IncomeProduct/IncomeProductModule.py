@@ -11,5 +11,11 @@ class IncomeProduct(Base):
     __tablename__ = data.tablename
 
     id: Mapped[int] = mapped_column(data.id_, Integer, primary_key=True)
-    income_id: Mapped[int] = mapped_column(data.income_id, ForeignKey(f'{income_data.tablename}.{income_data.id_}'))
-    product_id: Mapped[int] = mapped_column(data.product_id, ForeignKey(f'{product_data.tablename}.{product_data.id_}'))
+    income_id: Mapped[int] = mapped_column(
+        data.income_id,
+        ForeignKey(f'{income_data.tablename}.{income_data.id_}', ondelete="CASCADE")
+    )
+    product_id: Mapped[int] = mapped_column(
+        data.product_id,
+        ForeignKey(f'{product_data.tablename}.{product_data.id_}', ondelete="CASCADE")
+    )

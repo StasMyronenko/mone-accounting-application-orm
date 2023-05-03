@@ -14,7 +14,6 @@ class PersonalAPI:
     def create(session: Session, name: str, salary: int, role_id: int):
         person = Personal(name=name, salary=salary, role_id=role_id)
         session.add(person)
-        session.commit()
 
     @staticmethod
     def read_all(session: Session) -> Sequence[Row | RowMapping | Any | "Personal"]:
@@ -39,13 +38,10 @@ class PersonalAPI:
         if new_role_id:
             person.role_id = new_role_id
 
-        session.commit()
-
     @staticmethod
     def delete_by_id(session: Session, id_: int):
         person = session.get(Personal, id_)
         session.delete(person)
-        session.commit()
 
 
 class Personal(Base):
@@ -54,4 +50,8 @@ class Personal(Base):
     id: Mapped[int] = mapped_column(data.id_, Integer, primary_key=True)
     name: Mapped[str] = mapped_column(data.name, String)
     salary: Mapped[int] = mapped_column(data.salary, Integer)
-    role_id: Mapped[int] = mapped_column(data.role_id, ForeignKey(f'{Role.__tablename__}.{Role.id.key}'))
+    role_id: Mapped[int] = mapped_column(
+        data.role_id,
+        ForeignKey(f'{Role.__tablename__}.{Role.id.key}', ondelete='SET NULL'),
+        nullable=True
+    )

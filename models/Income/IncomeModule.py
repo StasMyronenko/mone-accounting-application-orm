@@ -6,9 +6,11 @@ from sqlalchemy.orm import mapped_column, Mapped, relationship, Session
 
 from models.Base import Base
 from models.IncomeProduct.IncomeProductModule import IncomeProduct
+from models.IncomeProduct.IncomeProductModule import data as income_product_data
 
 import models.Income.data as data
 import models.BankAccount.data as bank_account_data
+from models.Product.ProductModule import Product
 
 
 class IncomeAPI:
@@ -18,16 +20,15 @@ class IncomeAPI:
             sum_: int,
             from_account: str,
             bank_account_id: int,
-            products: list["IncomeProduct"]
+            products: list["Product"]
     ):
         income = Income(
             sum=sum_,
             from_account=from_account,
             bank_account_id=bank_account_id,
-            poducts=products
+            products=products
         )
         session.add(income)
-        session.commit()
 
     @staticmethod
     def read_all(session: Session) -> Sequence[Row | RowMapping | Any | "Income"]:
@@ -57,13 +58,10 @@ class IncomeAPI:
         if new_products:
             income.income_products = new_products
 
-        session.commit()
-
     @staticmethod
     def delete_by_id(session: Session, id_: int):
         income = session.get(Income, id_)
         session.delete(income)
-        session.commit()
 
 
 class Income(Base):
@@ -74,6 +72,7 @@ class Income(Base):
     from_account: Mapped[str] = mapped_column(data.from_account, String)
     bank_account_id: Mapped[int] = mapped_column(
         data.bank_account_id,
-        ForeignKey(f'{bank_account_data.tablename}.{bank_account_data.id_}')
+        ForeignKey(f'{bank_account_data.tablename}.{bank_account_data.id_}', ondelete="SET NULL"),
+        nullable=True
     )
-    income_products: Mapped[list["IncomeProduct"]] = relationship()
+    products: Mapped[list["Product"]] = relationship(secondary=income_product_data.tablename)

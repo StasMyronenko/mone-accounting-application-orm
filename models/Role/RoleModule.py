@@ -13,7 +13,6 @@ class RoleAPI:
     def create(session: Session, role_name: str):
         role = Role(role_name=role_name)
         session.add(role)
-        session.commit()
 
     @staticmethod
     def read_all(session: Session) -> Sequence[Row | RowMapping | Any | "Role"]:
@@ -25,13 +24,11 @@ class RoleAPI:
         role = session.get(Role, id_)
         if new_role_name:
             role.role_name = new_role_name
-        session.commit()
 
     @staticmethod
     def delete_by_id(session: Session, id_: int) -> None:
         role = session.get(Role, id_)
         session.delete(role)
-        session.commit()
 
 
 class Role(Base):

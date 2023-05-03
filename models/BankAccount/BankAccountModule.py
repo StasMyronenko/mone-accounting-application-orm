@@ -9,16 +9,22 @@ import models.BankAccount.data as data
 
 
 class BankAccountAPI:
+    """Requests to db without handling. Don't use it straight away, use db handlers"""
     @staticmethod
     def create(session: Session, number: str, name: str) -> None:
         bank_account = BankAccount(number=number, name=name)
         session.add(bank_account)
-        session.commit()
 
     @staticmethod
     def read_all(session: Session) -> Sequence[Row | RowMapping | Any | "BankAccount"]:
         statement = select(BankAccount)
         bank_accounts = session.scalars(statement).all()
+        return bank_accounts
+
+    @staticmethod
+    def read_by_id(session: Session, id_: int) -> Sequence[Row | RowMapping | Any | "BankAccount"]:
+        statement = select(BankAccount).where(BankAccount.id == id_)
+        bank_accounts = session.scalars(statement).first()
         return bank_accounts
 
     @staticmethod
@@ -28,13 +34,11 @@ class BankAccountAPI:
             bank_account.number = new_number
         if new_name:
             bank_account.name = new_name
-        session.commit()
 
     @staticmethod
     def delete_by_id(session: Session, id_: int) -> None:
         bank_account = session.get(BankAccount, id_)
         session.delete(bank_account)
-        session.commit()
 
 
 class BankAccount(Base):

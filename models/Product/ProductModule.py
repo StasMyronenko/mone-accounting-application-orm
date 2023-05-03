@@ -14,12 +14,17 @@ class ProductAPI:
     def create(session: Session, name: str, description: str, price: int):
         product = Product(name=name, description=description, price=price)
         session.add(product)
-        session.commit()
 
     @staticmethod
     def read_all(session: Session) -> Sequence[Row | RowMapping | Any | "Product"]:
         statement = select(Product)
         return session.scalars(statement).all()
+
+    @staticmethod
+    def read_by_ids(session: Session, ids: list[int]) -> Sequence[Row | RowMapping | Any | "Product"]:
+        statement = select(Product).filter(Product.id.in_(ids))
+        res = session.scalars(statement).all()
+        return res
 
     @staticmethod
     def update_by_id(
@@ -39,13 +44,10 @@ class ProductAPI:
         if new_price:
             product.price = new_price
 
-        session.commit()
-
     @staticmethod
     def delete_by_id(session: Session, id_: int) -> None:
         product = session.get(Product, id_)
         session.delete(product)
-        session.commit()
 
 
 class Product(Base):

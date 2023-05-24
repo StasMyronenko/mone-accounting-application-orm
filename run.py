@@ -6,7 +6,7 @@ from services.general.get_all_tables import get_all_tables
 from services.income.request_handlers import select_all_income, create_income, update_income_by_id, \
     delete_income_by_id
 from services.personal.request_handlers import select_all_personal, create_personal, update_personal_by_id, \
-    delete_personal_by_id
+    delete_personal_by_id, select_user_role, select_user_by_name
 from services.product.request_handlers import select_all_product, select_product_by_id, create_product, \
     update_product_by_id, delete_product_by_id
 from services.role.request_handlers import select_all_role, create_role, update_role_by_id, delete_role_by_id
@@ -17,7 +17,12 @@ start_menu_text = """Choose one option(enter number):
 1. Show all tables
 2. Show table
 3. Update table
+4. Harder requests
 """
+
+update_table_menu = '1. Create data\n2. Update data\n3. Delete data'
+
+harder_request_menu = 'Choose action:\n1. Take user\'s role by his name: '
 
 table_list = ['BankAccount', 'Cost', 'Income', 'Personal', 'Product', 'Role']
 table_dict = {}
@@ -41,12 +46,20 @@ def show_all_tables():
         print()
 
 
-def show_attrs(data):
+def show_attrs(data: list):
     for row in data:
-        attrs = vars(row)
-        for key, value in attrs.items():
-            if '_' not in key[:2]:
-                print(key, ': ', value, sep='')
+        try:
+            iter(data)
+            for tuple_row in row:
+                attrs = vars(tuple_row)
+                for key, value in attrs.items():
+                    if '_' not in key[:2]:
+                        print(key, ': ', value, sep='')
+        except TypeError:
+            attrs = vars(row)
+            for key, value in attrs.items():
+                if '_' not in key[:2]:
+                    print(key, ': ', value, sep='')
         print()
 
 
@@ -82,7 +95,7 @@ def run_console_application():
                         data = select_all_role()
                         show_attrs(data)
             case '3':
-                action_number = input('1. Create data\n2. Update data\n3. Delete data')
+                action_number = input(update_table_menu)
                 table_number = input(f'Choose table, {table_dict}')
                 table = table_list[int(table_number)]
                 match action_number:
@@ -200,10 +213,21 @@ def run_console_application():
                             case 'Role':
                                 id_ = int(input('id: '))
                                 delete_role_by_id(id_)
+            case '4':
+                action = input(harder_request_menu)
+                match action:
+                    case '1':
+                        name = input('Write his name: ')
+                        users = select_user_by_name(name)
+                        for user in users:
+                            role = select_user_role(user)
+                            print(f'id: {user.id}, name: {user.name}, role: {role.role_name}')
     print('Good bye')
 
 
 def test_run():
-    products = select_product_by_id([1, 3])
-    show_attrs(products)
+    people = select_all_personal()
+    user = people[0]
+    role = select_user_role(user)
+    print(role)
 

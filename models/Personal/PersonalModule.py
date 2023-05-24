@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from sqlalchemy import Integer, String, ForeignKey, Sequence, Row, RowMapping, select
+from sqlalchemy import Integer, String, ForeignKey, Sequence, Row, RowMapping, select, inspect
 from sqlalchemy.dialects.postgresql import Any
-from sqlalchemy.orm import mapped_column, Mapped, Session
+from sqlalchemy.orm import mapped_column, Mapped, Session, relationship
 
 from models.Base import Base
 from models.Role.RoleModule import Role
@@ -18,6 +18,11 @@ class PersonalAPI:
     @staticmethod
     def read_all(session: Session) -> Sequence[Row | RowMapping | Any | "Personal"]:
         statement = select(Personal)
+        return session.scalars(statement).all()
+
+    @staticmethod
+    def read_by_name(session: Session, name: str) -> Sequence[Row | RowMapping | Any | "Personal"]:
+        statement = select(Personal).where(Personal.name == name)
         return session.scalars(statement).all()
 
     @staticmethod
@@ -55,3 +60,4 @@ class Personal(Base):
         ForeignKey(f'{Role.__tablename__}.{Role.id.key}', ondelete='SET NULL'),
         nullable=True
     )
+    role: Mapped[Role] = relationship(Role, lazy="select")

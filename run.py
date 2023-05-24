@@ -4,7 +4,7 @@ from services.bank_account.request_handlers import select_all_bank_accounts, cre
 from services.cost.request_handlers import select_all_cost, create_cost, update_cost_by_id, delete_cost_by_id
 from services.general.get_all_tables import get_all_tables
 from services.income.request_handlers import select_all_income, create_income, update_income_by_id, \
-    delete_income_by_id
+    delete_income_by_id, select_all_income_where_sum_less_than
 from services.personal.request_handlers import select_all_personal, create_personal, update_personal_by_id, \
     delete_personal_by_id, select_user_role, select_user_by_name
 from services.product.request_handlers import select_all_product, select_product_by_id, create_product, \
@@ -22,7 +22,7 @@ start_menu_text = """Choose one option(enter number):
 
 update_table_menu = '1. Create data\n2. Update data\n3. Delete data'
 
-harder_request_menu = 'Choose action:\n1. Take user\'s role by his name: '
+harder_request_menu = 'Choose action:\n1. Take user\'s role by his name\n2. Take all Incomes with products where sum less then'
 
 table_list = ['BankAccount', 'Cost', 'Income', 'Personal', 'Product', 'Role']
 table_dict = {}
@@ -222,6 +222,15 @@ def run_console_application():
                         for user in users:
                             role = select_user_role(user)
                             print(f'id: {user.id}, name: {user.name}, role: {role.role_name}')
+                    case '2':
+                        max_sum = int(input('Write max sum(integer number): '))
+                        incomes = select_all_income_where_sum_less_than(max_sum)
+                        for income in incomes:
+                            products_name_list = []
+                            for product in income.products:
+                                products_name_list.append(product.name)
+                            products_string = ', '.join(products_name_list)
+                            print(f'id: {income.id}, sum: {income.sum}, products: {products_string}')
     print('Good bye')
 
 

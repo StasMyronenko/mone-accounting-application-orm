@@ -25,6 +25,10 @@ def select_all_income():
     return handle_session_error(IncomeAPI.read_all, False)
 
 
+def select_all_income_where_sum_less_than(max_sum: int):
+    return handle_session_error(IncomeAPI.read_all_where_sum_less_than, False, max_sum=max_sum)
+
+
 def update_income_by_id(
     id_: int,
     new_sum: int | None,

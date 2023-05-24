@@ -33,7 +33,12 @@ class IncomeAPI:
     @staticmethod
     def read_all(session: Session) -> Sequence[Row | RowMapping | Any | "Income"]:
         statement = select(Income)
-        return session.scalars(statement).all()
+        return session.scalars(statement).unique().all()
+
+    @staticmethod
+    def read_all_where_sum_less_than(session: Session, max_sum: int) -> Sequence[Row | RowMapping | Any | "Income"]:
+        statement = select(Income).filter(Income.sum < max_sum).order_by(Income.sum)
+        return session.scalars(statement).unique().all()
 
     @staticmethod
     def update_by_id(
@@ -75,4 +80,4 @@ class Income(Base):
         ForeignKey(f'{bank_account_data.tablename}.{bank_account_data.id_}', ondelete="SET NULL"),
         nullable=True
     )
-    products: Mapped[list["Product"]] = relationship(secondary=income_product_data.tablename)
+    products: Mapped[list["Product"]] = relationship(secondary=income_product_data.tablename, lazy='joined')

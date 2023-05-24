@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from sqlalchemy import Integer, String, ForeignKey, Sequence, Row, RowMapping, select, inspect
+from sqlalchemy import Integer, String, ForeignKey, Sequence, Row, RowMapping, select
 from sqlalchemy.dialects.postgresql import Any
 from sqlalchemy.orm import mapped_column, Mapped, Session, relationship
 
